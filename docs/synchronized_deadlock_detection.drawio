@@ -1,0 +1,209 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram name="Synchronized死锁检测原理" id="sync-deadlock-detection">
+    <mxGraphModel dx="1425" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#333333;" value="Synchronized关键字死锁检测原理图" vertex="1">
+          <mxGeometry height="40" width="400" x="450" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" value="开始检测" vertex="1">
+          <mxGeometry height="50" width="100" x="600" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="step1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="1. 获取所有线程及堆栈&#xa;Thread.getAllStackTraces()" vertex="1">
+          <mxGeometry height="60" width="180" x="560" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="2. 筛选BLOCKED状态线程&#xa;thread.getState() == BLOCKED" vertex="1">
+          <mxGeometry height="60" width="180" x="560" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="decision1" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="BLOCKED线程&#xa;数量 &gt;= 2?" vertex="1">
+          <mxGeometry height="80" width="140" x="580" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="step3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="3. 构建等待图&#xa;buildWaitForGraph()" vertex="1">
+          <mxGeometry height="60" width="180" x="560" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="waitgraph_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;dashed=1;" value="" vertex="1">
+          <mxGeometry height="280" width="380" x="80" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="waitgraph_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333333;" value="等待图构建过程" vertex="1">
+          <mxGeometry height="30" width="180" x="180" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_step1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="遍历每个BLOCKED线程" vertex="1">
+          <mxGeometry height="40" width="160" x="100" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_step2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="分析堆栈找等待方法&#xa;findWaitingMethod()" vertex="1">
+          <mxGeometry height="40" width="160" x="100" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_step3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="遍历其他线程&#xa;查找锁持有者" vertex="1">
+          <mxGeometry height="40" width="160" x="100" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_step4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="isHoldingLock()&#xa;检查是否持有锁" vertex="1">
+          <mxGeometry height="40" width="160" x="100" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_result" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;" value="Map&lt;ThreadA, ThreadB&gt;&#xa;A等待B持有的锁" vertex="1">
+          <mxGeometry height="50" width="160" x="280" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_arrow1" edge="1" parent="1" source="wg_step1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="wg_step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_arrow2" edge="1" parent="1" source="wg_step2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="wg_step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_arrow3" edge="1" parent="1" source="wg_step3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="wg_step4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wg_arrow4" edge="1" parent="1" source="wg_step4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d79b00;strokeWidth=2;" target="wg_result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="4. DFS检测环&#xa;detectCycles()" vertex="1">
+          <mxGeometry height="60" width="180" x="560" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;dashed=1;" value="" vertex="1">
+          <mxGeometry height="380" width="490" x="870" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333333;" value="DFS环检测算法" vertex="1">
+          <mxGeometry height="30" width="140" x="1090" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_step1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="维护visited集合&#xa;(已访问节点)" vertex="1">
+          <mxGeometry height="40" width="140" x="910" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_step2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="维护inStack集合&#xa;(当前路径节点)" vertex="1">
+          <mxGeometry height="40" width="140" x="1190" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_step3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" value="从每个未访问节点&#xa;开始DFS遍历" vertex="1">
+          <mxGeometry height="40" width="140" x="1020" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_decision" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="next节点&#xa;在inStack中?" vertex="1">
+          <mxGeometry height="60" width="120" x="1030" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_cycle" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" value="发现环!&#xa;提取环中节点" vertex="1">
+          <mxGeometry height="40" width="100" x="1230" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_continue" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="继续DFS" vertex="1">
+          <mxGeometry height="40" width="80" x="900" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_arrow1" edge="1" parent="1" source="dfs_step1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="dfs_step3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="340" />
+              <mxPoint x="1090" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dfs_arrow2" edge="1" parent="1" source="dfs_step2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="dfs_step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_arrow3" edge="1" parent="1" source="dfs_step3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="dfs_decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_arrow4" edge="1" parent="1" source="dfs_decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;" target="dfs_cycle" value="是">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs_arrow5" edge="1" parent="1" source="dfs_decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;" target="dfs_continue" value="否">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="decision2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="检测到环?" vertex="1">
+          <mxGeometry height="70" width="120" x="590" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="step5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" value="5. 生成死锁报告&#xa;buildReport()" vertex="1">
+          <mxGeometry height="60" width="180" x="560" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="report_blocked" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" value="报告BLOCKED线程&#xa;(潜在死锁警告)" vertex="1">
+          <mxGeometry height="60" width="160" x="780" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;" value="结束" vertex="1">
+          <mxGeometry height="50" width="100" x="600" y="860" as="geometry" />
+        </mxCell>
+        <mxCell id="end_no_deadlock" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" value="无死锁" vertex="1">
+          <mxGeometry height="50" width="80" x="800" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" edge="1" parent="1" source="start" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="step1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" edge="1" parent="1" source="step1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" edge="1" parent="1" source="step2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="decision1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" edge="1" parent="1" source="decision1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;strokeWidth=2;" target="step3" value="是">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" edge="1" parent="1" source="step3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="step4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" edge="1" parent="1" source="step4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="decision2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" edge="1" parent="1" source="decision2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;" target="step5" value="是">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow8" edge="1" parent="1" source="step5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow9" edge="1" parent="1" source="decision2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d79b00;strokeWidth=2;" target="report_blocked" value="否">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow10" edge="1" parent="1" source="report_blocked" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" target="end_no_deadlock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow11" edge="1" parent="1" source="decision1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="end_no_deadlock" value="否">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="380" />
+              <mxPoint x="840" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="link1" edge="1" parent="1" source="step3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;" target="waitgraph_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link2" edge="1" parent="1" source="step4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;" target="dfs_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="example_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;dashed=1;" value="" vertex="1">
+          <mxGeometry height="200" width="380" x="80" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="example_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#333333;" value="死锁示例: 循环等待" vertex="1">
+          <mxGeometry height="30" width="180" x="180" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="thread_a" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="Thread A&#xa;(BLOCKED)&#xa;等待Lock B" vertex="1">
+          <mxGeometry height="60" width="100" x="110" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="thread_b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" value="Thread B&#xa;(BLOCKED)&#xa;等待Lock A" vertex="1">
+          <mxGeometry height="60" width="100" x="330" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="lock_a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Lock A&#xa;(Thread A持有)" vertex="1">
+          <mxGeometry height="40" width="100" x="110" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="lock_b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Lock B&#xa;(Thread B持有)" vertex="1">
+          <mxGeometry height="40" width="100" x="330" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="ex_arrow1" edge="1" parent="1" source="thread_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;curved=1;" target="lock_b" value="等待">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="790" />
+              <mxPoint x="290" y="790" />
+              <mxPoint x="290" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ex_arrow2" edge="1" parent="1" source="thread_b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;curved=1;" target="lock_a" value="等待">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="700" />
+              <mxPoint x="250" y="700" />
+              <mxPoint x="250" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ex_arrow3" edge="1" parent="1" source="thread_a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;strokeWidth=2;" target="lock_a" value="持有">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ex_arrow4" edge="1" parent="1" source="thread_b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;strokeWidth=2;" target="lock_b" value="持有">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
